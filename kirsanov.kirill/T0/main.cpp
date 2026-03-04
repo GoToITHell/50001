@@ -1,6 +1,6 @@
 #include <iostream>
 
 int main() {
-    std::cout << "Kirsanov Kirill" << std::endl;
+    std::cout << "kirsanov.kirill" << std::endl;
     return 0;
 }
