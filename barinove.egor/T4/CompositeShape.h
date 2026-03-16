@@ -23,4 +23,4 @@ public:
     ~CompositeShape() override;
 };
 
-#endif 
+#endif

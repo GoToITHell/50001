@@ -18,4 +18,4 @@ public:
     ~Rectangle() override;
 };
 
-#endif 
+#endif

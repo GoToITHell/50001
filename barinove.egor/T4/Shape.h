@@ -26,4 +26,4 @@ public:
     virtual ~Shape() {};
 };
 
-#endif 
+#endif

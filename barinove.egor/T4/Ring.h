@@ -19,5 +19,5 @@ public:
     ~Ring() override;
 };
 
-#endif 
+#endif
 
