@@ -24,9 +24,9 @@ void Square::scale(double k) {
     if (k < 0) {
         throw std::runtime_error("incorrect k");
     }
-    
+
     Point center = getCenter();
-    
+
     side_ *= k;
     bottomLeftCorner_.x_ = center.x_ - side_ / 2;
     bottomLeftCorner_.y_ = center.y_ - side_ / 2;
@@ -39,5 +39,5 @@ const char* Square::getName() const {
 void Square::print() const {
     std::cout << std::fixed << std::setprecision(2);
     std::cout << "[" << getName() << ",\t("<< getCenter().x_ << ", " << getCenter().y_ << "),\t"<< getArea() << "]" << std::endl;
-    
+
 }

@@ -11,7 +11,6 @@ private:
     double side_;       
 
 public:
-
     /* КОНСТРУКТОРЫ */
     Square(const Square& other) = delete;
     Square(Square&& other) = delete;

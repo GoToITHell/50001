@@ -6,7 +6,6 @@
 class Shape {
 
 public:
-
 // Деструктор
 virtual ~Shape() = default; 
 

@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector> 
+#include <vector>
 #include <memory>
 
 #include "CompositeShape.hpp"

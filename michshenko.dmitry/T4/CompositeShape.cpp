@@ -24,8 +24,8 @@ Point CompositeShape::getCenter() const {
         throw std::runtime_error("List is empty");
     }
 
-    double MAX_DOUBLE = std::numeric_limits<double>::max(); 
-    double MIN_DOUBLE = std::numeric_limits<double>::lowest(); 
+    double MAX_DOUBLE = std::numeric_limits<double>::max();
+    double MIN_DOUBLE = std::numeric_limits<double>::lowest();
 
     double minX = MAX_DOUBLE;
     double minY = MAX_DOUBLE;
@@ -53,10 +53,10 @@ void CompositeShape::scale(double k) {
 
     Point centerOfCompositeShape = getCenter();
     for (size_t i =0; i < shapes_.size(); i++) {
-        Point centerOfShape = shapes_[i]->getCenter(); 
-        double newX = centerOfShape.x_ - centerOfCompositeShape.x_; 
-        double newY = centerOfShape.y_ - centerOfCompositeShape.y_; 
-        shapes_[i]->move(newX * (k - 1), newY * (k - 1)); 
+        Point centerOfShape = shapes_[i]->getCenter();
+        double newX = centerOfShape.x_ - centerOfCompositeShape.x_;
+        double newY = centerOfShape.y_ - centerOfCompositeShape.y_;
+        shapes_[i]->move(newX * (k - 1), newY * (k - 1));
         shapes_[i]->scale(k);
     }
 }
