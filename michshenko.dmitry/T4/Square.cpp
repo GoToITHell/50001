@@ -41,4 +41,3 @@ void Square::print() const {
     std::cout << "[" << getName() << ",\t("<< getCenter().x_ << ", " << getCenter().y_ << "),\t"<< getArea() << "]" << std::endl;
     
 }
-

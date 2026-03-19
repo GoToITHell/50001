@@ -13,4 +13,3 @@ Point(double x, double y) : x_(x), y_(y) {};
 };
 
 #endif
-

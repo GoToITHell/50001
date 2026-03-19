@@ -39,4 +39,3 @@ class Rectangle : public Shape {
 
 
 #endif
-

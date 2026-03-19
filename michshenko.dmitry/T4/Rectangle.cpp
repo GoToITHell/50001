@@ -43,4 +43,3 @@ std::cout << std::fixed << std::setprecision(2);
 std::cout << "[" << getName() << ",\t("<< getCenter().x_ << ", " << getCenter().y_ << "),\t"<< getArea() << "]" << std::endl;
 
 } 
-

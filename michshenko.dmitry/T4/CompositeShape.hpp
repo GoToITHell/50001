@@ -35,4 +35,3 @@ class CompositeShape : public Shape {
 };
 
 #endif
-
