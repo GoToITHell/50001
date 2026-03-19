@@ -21,3 +21,4 @@ virtual void print() const = 0;
 };
 
 #endif
+
