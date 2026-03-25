@@ -1,6 +1,6 @@
 ﻿#include <iomanip>
 
-#include "compositeShape.h" 
+#include "compositeShape.h"
 
 int main()
 {
@@ -21,7 +21,6 @@ int main()
         }
         shapes.push_back(std::move(composite));
         // вывод фигур
-
         for (int i = 0; i < 5; i++)
         {
             shapes[i]->print(false);

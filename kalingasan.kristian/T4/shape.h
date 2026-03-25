@@ -20,7 +20,7 @@ public:
     virtual bool scale(size_t k) = 0;
     virtual std::string getName() = 0;
     virtual std::vector<Point> getBox() = 0; // возвращает левую нижнюю и правую верхнюю вершины прямоугольника, ограничивающего фигуру
-    virtual bool print(bool forComposite) = 0; // при false просто выводит информацию фигуры, 
+    virtual bool print(bool forComposite) = 0; // при false просто выводит информацию фигуры,
     //при true дает информацию без скобок для составной фигуры
 };
 
