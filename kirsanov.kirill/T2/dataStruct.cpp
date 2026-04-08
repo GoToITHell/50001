@@ -75,7 +75,7 @@ namespace kirsanov {
                         break;
                 }
             }
-            
+
             std::istringstream field(token);
             std::string key, value;
 
@@ -147,8 +147,8 @@ namespace kirsanov {
 
         out << "(:key1 ";
         out << d.key1 << "ull";
-        out << ":key2 #c(" 
-            << std::fixed<< std::setprecision(1) 
+        out << ":key2 #c("
+            << std::fixed<< std::setprecision(1)
             <<d.key2.real() << " " << d.key2.imag() << ")";
         out << ":key3 \"" << d.key3 << "\":)";
 
