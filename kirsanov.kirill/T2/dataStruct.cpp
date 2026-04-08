@@ -63,6 +63,19 @@ namespace kirsanov {
             if (token.empty())
                 continue;
 
+            //проверка, что кавычки закрыты
+            //если нечетное количество, значит строка разбита неверно
+            if (std::count(token.begin(), token.end(), '"') % 2 != 0)
+            {
+                std::string extra;
+                while (std::getline(iss, extra, ':'))
+                {
+                    token += ":" + extra;
+                    if (std::count(extra.begin(), extra.end(), '"') % 2 != 0)
+                        break;
+                }
+            }
+            
             std::istringstream field(token);
             std::string key, value;
 
@@ -82,7 +95,7 @@ namespace kirsanov {
                 if (!parseULL(value, v))
                 {
                     in.setstate(std::ios::failbit);
-                    return in;
+                    break;
                 }
                 data.key1 = v;
                 has1 = true;
@@ -93,7 +106,7 @@ namespace kirsanov {
                 if (!parseComplex(value, c))
                 {
                     in.setstate(std::ios::failbit);
-                    return in;
+                    break;
                 }
                 data.key2 = c;
                 has2 = true;
@@ -103,7 +116,7 @@ namespace kirsanov {
                 if (value.size() < 2 || value.front() != '"' || value.back() != '"')
                 {
                     in.setstate(std::ios::failbit);
-                    return in;
+                    break;
                 }
                 data.key3 = value.substr(1, value.size() - 2);
                 has3 = true;
@@ -114,6 +127,7 @@ namespace kirsanov {
         if (!has1 || !has2 || !has3)
         {
             in.setstate(std::ios::failbit);
+            return in;
         }
 
         return in;
@@ -133,7 +147,9 @@ namespace kirsanov {
 
         out << "(:key1 ";
         out << d.key1 << "ull";
-        out << ":key2 #c(" << d.key2.real() << " " << d.key2.imag() << ")";
+        out << ":key2 #c(" 
+            << std::fixed<< std::setprecision(1) 
+            <<d.key2.real() << " " << d.key2.imag() << ")";
         out << ":key3 \"" << d.key3 << "\":)";
 
         return out;
