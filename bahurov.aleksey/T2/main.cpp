@@ -2,38 +2,31 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 
 int main()
 {
     using bahurov::DataStruct;
 
     std::vector<DataStruct> data;
-
-    // Если использовать std::copy для чтения записей из потока,
-    // то некорректные записи не будут игнорироваться
-
-    /*std::copy(
-        std::istream_iterator<DataStruct>(std::cin),
-        std::istream_iterator<DataStruct>(),
-        std::back_inserter(data)
-    );*/
-
-    // Читаем записи из потока std::cin
-    while (!std::cin.eof())
+    
+    std::stringstream buf;
+    std::string currentLine;
+    while (std::getline(std::cin, currentLine))
     {
-        DataStruct current;
-        if (std::cin >> current)
+        std::istringstream iss(currentLine);
+        DataStruct cur;
+        if (iss >> cur)
         {
-            data.push_back(current);
-        }
-        else if (!std::cin.eof() && std::cin.fail())
-        {
-            // Сбрасываем текущее состояние потока
-            std::cin.clear();
-            // Удаляем из потока максимально возможное кол-во символов до '\n'
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            buf << currentLine << '\n';
         }
     }
+
+    std::copy(
+        std::istream_iterator<DataStruct>(buf),
+        std::istream_iterator<DataStruct>(),
+        std::back_inserter(data)
+    );
 
     // Сортируем записи через std::sort, используя собственный компаратор
     std::sort(data.begin(), data.end());
