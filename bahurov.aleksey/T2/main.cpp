@@ -9,24 +9,20 @@ int main()
     using bahurov::DataStruct;
 
     std::vector<DataStruct> data;
-    
-    std::stringstream buf;
-    std::string currentLine;
-    while (std::getline(std::cin, currentLine))
+
+    while (!std::cin.eof())
     {
-        std::istringstream iss(currentLine);
-        DataStruct cur;
-        if (iss >> cur)
+        std::copy(
+            std::istream_iterator<DataStruct>(std::cin),
+            std::istream_iterator<DataStruct>(),
+            std::back_inserter(data)
+        );
+        if (!std::cin.eof() && std::cin.fail())
         {
-            buf << currentLine << '\n';
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
-
-    std::copy(
-        std::istream_iterator<DataStruct>(buf),
-        std::istream_iterator<DataStruct>(),
-        std::back_inserter(data)
-    );
 
     // Сортируем записи через std::sort, используя собственный компаратор
     std::sort(data.begin(), data.end());
