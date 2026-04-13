@@ -1,56 +1,35 @@
-﻿#include <vector>
-#include <string>
-#include <sstream>
-#include <iterator>
+﻿#include "dataStruct.h"
+#include <vector>
 #include <algorithm>
+#include <iterator>
 #include <iostream>
-#include <cmath>
-#include "dataStruct.h"
-
-using namespace kirsanov;
+#include <limits>
 
 int main()
 {
-    std::vector<DataStruct> data;
-    std::stringstream buffer; //только корректные строки
-    std::string line; //временное хранение ввода
+    using kirsanov::DataStruct;
 
-    // фильтрация корректных строк
-    while (std::getline(std::cin, line))
+    std::vector<DataStruct> data;
+
+    while (!std::cin.eof())
     {
-        std::istringstream iss(line);
-        DataStruct temp;
-        //проверка корректности строки
-        if (iss >> temp)
+        std::copy(
+            std::istream_iterator<DataStruct>(std::cin),
+            std::istream_iterator<DataStruct>(),
+            std::back_inserter(data)
+        );
+
+        if (!std::cin.eof() && std::cin.fail())
         {
-            buffer << line << '\n';
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 
-    // чтение через istream_iterator
-    std::copy(
-        std::istream_iterator<DataStruct>(buffer),
-        std::istream_iterator<DataStruct>(),
-        std::back_inserter(data)
-    );
+    // Сортируем записи через std::sort, используя собственный компаратор
+    std::sort(data.begin(), data.end());
 
-    // сортировка
-    std::sort(data.begin(), data.end(),
-        [](const DataStruct& a, const DataStruct& b)
-        {
-            //по key1
-            if (a.key1 != b.key1)
-                return a.key1 < b.key1;
-
-            //по модулю комплексного
-            if (std::abs(a.key2) != std::abs(b.key2))
-                return std::abs(a.key2) < std::abs(b.key2);
-
-            //по длине строки
-            return a.key3.size() < b.key3.size();
-        });
-
-    // вывод
+    // Выводим отсортированные записи в поток std::cout
     std::copy(
         data.begin(),
         data.end(),
@@ -59,6 +38,3 @@ int main()
 
     return 0;
 }
-
-
-

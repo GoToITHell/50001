@@ -8,7 +8,7 @@ namespace kirsanov {
     class iofmtguard
     {
     public:
-        explicit iofmtguard(std::basic_ios<char>& s);
+        iofmtguard(std::basic_ios<char>& s);
         ~iofmtguard();
 
     private:

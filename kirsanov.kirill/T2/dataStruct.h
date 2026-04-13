@@ -1,23 +1,30 @@
 ﻿#ifndef DATASTRUCT_H
 #define DATASTRUCT_H
 
-#include <string>
-#include <complex>
 #include <iostream>
+#include <complex>
+#include <string>
+#include "iotypes.h"
+#include "iofmtguard.h"
 
 namespace kirsanov
 {
+    // Структура данных согласно варианту 10 (ULL LIT + CMP LSP)
     struct DataStruct
     {
-        unsigned long long key1;
-        std::complex<double> key2;
-        std::string key3;
+        unsigned long long key1;        // ULL LIT - беззнаковое целое
+        std::complex<double> key2;      // CMP LSP - комплексное число
+        std::string key3;               // строковое поле
     };
 
-    bool parseULL(const std::string& str, unsigned long long& value);
-    bool parseComplex(const std::string& str, std::complex<double>& value);
+    // Перегрузка оператора ввода для DataStruct
+    std::istream& operator>>(std::istream& in, DataStruct& dest);
 
-    std::istream& operator>>(std::istream& in, DataStruct& data);
-    std::ostream& operator<<(std::ostream& out, const DataStruct& data);
+    // Перегрузка оператора вывода для DataStruct
+    std::ostream& operator<<(std::ostream& out, const DataStruct& src);
+
+    // Перегрузка оператора сравнения для сортировки
+    bool operator<(const DataStruct& lhs, const DataStruct& rhs);
 }
+
 #endif

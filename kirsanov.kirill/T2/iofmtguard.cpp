@@ -2,6 +2,7 @@
 
 namespace kirsanov {
 
+    //Конструктор
     iofmtguard::iofmtguard(std::basic_ios<char>& s) :
         s_(s),
         width_(s.width()),
@@ -11,6 +12,7 @@ namespace kirsanov {
     {
     }
 
+    //Деструктор
     iofmtguard::~iofmtguard()
     {
         s_.width(width_);

@@ -1,142 +1,83 @@
 ﻿#include "dataStruct.h"
-#include "iofmtguard.h"
-#include <sstream>
 #include <iomanip>
-#include <algorithm>
+#include <cmath>
 
-namespace kirsanov {
+namespace kirsanov
+{
 
-    //PARSERS
-    bool parseULL(const std::string& str, unsigned long long& value)
+    std::istream& operator>>(std::istream& in, DataStruct& dest)
     {
-        if (str.size() < 3 || str.substr(str.size() - 3) != "ull")
-            return false;
-
-        try
+        // sentry проверяет состояние потока
+        std::istream::sentry sentry(in);
+        if (!sentry)
         {
-            value = std::stoull(str.substr(0, str.size() - 3));
-        }
-        catch (...)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool parseComplex(const std::string& str, std::complex<double>& value)
-    {
-        if (str.find("#c(") != 0 || str.back() != ')')
-            return false;
-
-        std::string inside = str.substr(3, str.size() - 4);
-        std::istringstream iss(inside);
-
-        double real, imag;
-        if (!(iss >> real >> imag))
-            return false;
-
-        value = { real, imag };
-        return true;
-    }
-
-    //INPUT
-    std::istream& operator>>(std::istream& in, DataStruct& data)
-    {
-        std::string content;
-
-        if (!std::getline(in, content))
             return in;
+        }
 
-        if (content.empty() || content.front() != '(' || content.back() != ')')
+        DataStruct input;           // временный объект для чтения
+        bool isKey1Read = false;    // флаги для проверки чтения всех полей
+        bool isKey2Read = false;
+        bool isKey3Read = false;
+
+        in >> std::ws;
+        in >> DelimetrIO{ '(' } >> DelimetrIO{ ':' }; // проверяем "(:"
+
+        // Цикл чтения полей до тех пор, пока не прочитаны все три ключа
+        while (in && !(isKey1Read && isKey2Read && isKey3Read))
+        {
+            std::string keyName = "";
+            in >> KeyIO{ keyName };
+            in >> std::ws;              // пропускаем пробелы после ключа
+
+            if (in)
+            {
+                // Чтение key1 (беззнаковое целое с суффиксом)
+                if (keyName == "key1" && !isKey1Read)
+                {
+                    in >> std::ws;
+                    in >> ULLIO{ input.key1 };
+                    isKey1Read = static_cast<bool>(in);
+                }
+                // Чтение key2 (комплексное число в формате #c(real imag))
+                else if (keyName == "key2" && !isKey2Read)
+                {
+                    in >> std::ws;
+                    in >> ComplexIO{ input.key2 };
+                    isKey2Read = static_cast<bool>(in);
+                }
+                // Чтение key3 (строка в кавычках)
+                else if (keyName == "key3" && !isKey3Read)
+                {
+                    in >> std::ws;
+                    in >> StringIO{ input.key3 };
+                    isKey3Read = static_cast<bool>(in);
+                }
+                else
+                {
+                    // Неизвестный ключ или повторное чтение
+                    in.setstate(std::ios::failbit);
+                }
+
+                in >> DelimetrIO{ ':' }; // после значения должен быть ':'
+            }
+        }
+
+        // Проверяем закрывающую скобку и что все поля прочитаны
+        char c;
+        in >> c;
+        if (c == ')' && isKey1Read && isKey2Read && isKey3Read)
+        {
+            dest = std::move(input);  // перемещаем во избежание копирования
+        }
+        else
         {
             in.setstate(std::ios::failbit);
-            return in;
         }
-
-        std::istringstream iss(content.substr(1, content.size() - 2));
-
-        std::string token;
-        bool has1 = false, has2 = false, has3 = false;
-
-        //разбиение строки по ключам
-        while (std::getline(iss, token, ':'))
-        {
-            if (token.empty())
-                continue;
-
-            //проверка, что кавычки закрыты
-            //если нечетное количество, значит строка разбита неверно
-            if (std::count(token.begin(), token.end(), '"') % 2 != 0)
-            {
-                std::string extra;
-                while (std::getline(iss, extra, ':'))
-                {
-                    token += ":" + extra;
-                    if (std::count(extra.begin(), extra.end(), '"') % 2 != 0)
-                        break;
-                }
-            }
-
-            std::istringstream field(token);
-            std::string key, value;
-
-            //получение ключа и значения
-            field >> key;
-
-            std::getline(field, value);
-
-            if (!value.empty() && value[0] == ' ')
-            {
-                value.erase(0, 1); // убрать пробел
-            }
-
-            if (key == "key1")
-            {
-                unsigned long long v;
-                if (!parseULL(value, v))
-                {
-                    in.setstate(std::ios::failbit);
-                    break;
-                }
-                data.key1 = v;
-                has1 = true;
-            }
-            else if (key == "key2")
-            {
-                std::complex<double> c;
-                if (!parseComplex(value, c))
-                {
-                    in.setstate(std::ios::failbit);
-                    break;
-                }
-                data.key2 = c;
-                has2 = true;
-            }
-            else if (key == "key3")
-            {
-                if (value.size() < 2 || value.front() != '"' || value.back() != '"')
-                {
-                    in.setstate(std::ios::failbit);
-                    break;
-                }
-                data.key3 = value.substr(1, value.size() - 2);
-                has3 = true;
-            }
-        }
-
-        //проверка наличия всех ключей
-        if (!has1 || !has2 || !has3)
-        {
-            in.setstate(std::ios::failbit);
-            return in;
-        }
-
         return in;
     }
 
-
-    //  OUTPUT
-    std::ostream& operator<<(std::ostream& out, const DataStruct& d)
+    // Оператор вывода DataStruct в поток
+    std::ostream& operator<<(std::ostream& out, const DataStruct& src)
     {
         std::ostream::sentry sentry(out);
         if (!sentry)
@@ -144,15 +85,35 @@ namespace kirsanov {
             return out;
         }
 
-        iofmtguard fmtguard(out);
+        iofmtguard fmtguard(out);  //  сохраняем и восстанавливаем флаги форматирования
 
+        // Вывод в фиксированном порядке: key1, key2, key3 (как требуется в задании)
         out << "(:key1 ";
-        out << d.key1 << "ull";
+        out << src.key1 << "ULL";   // ULL LIT с суффиксом ULL
         out << ":key2 #c("
-            << std::fixed<< std::setprecision(1)
-            <<d.key2.real() << " " << d.key2.imag() << ")";
-        out << ":key3 \"" << d.key3 << "\":)";
+            << std::fixed << std::setprecision(1)
+            << src.key2.real() << " " << src.key2.imag() << ")";
+        out << ":key3 \"" << src.key3 << "\":)";
 
         return out;
+    }
+
+    // Оператор сравнения для сортировки (компаратор)
+    bool operator<(const DataStruct& lhs, const DataStruct& rhs)
+    {
+        // 1. Сравнение по возрастанию key1
+        if (lhs.key1 != rhs.key1)
+        {
+            return lhs.key1 < rhs.key1;
+        }
+
+        // 2. Если key1 равны - сравнение по модулю комплексного числа key2
+        if (std::abs(lhs.key2) != std::abs(rhs.key2))
+        {
+            return std::abs(lhs.key2) < std::abs(rhs.key2);
+        }
+
+        // 3. Если все поля равны - сравнение по длине строки key3
+        return lhs.key3.size() < rhs.key3.size();
     }
 }
