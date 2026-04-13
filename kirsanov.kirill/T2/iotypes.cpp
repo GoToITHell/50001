@@ -3,25 +3,29 @@
 
 namespace kirsanov
 {
-    // Проверка символа-разделителя
+    // ПРОВЕРКА СИМВОЛА-РАЗДЕЛИТЕЛЯ
     std::istream& operator>>(std::istream& in, DelimetrIO&& dest)
     {
+        // Сохраняем флаги и отключаем пропуск пробелов
+        iofmtguard fmtguard(in);
+        in >> std::noskipws;  // Не пропускаем пробелы
+
         std::istream::sentry sentry(in);
         if (!sentry)
         {
             return in;
         }
 
-        char c = '0';
+        char c = '\0';
         in >> c;
         if (in && (c != dest.exp))
         {
-            in.setstate(std::ios::failbit);  // не тот символ - ошибка
+            in.setstate(std::ios::failbit);
         }
         return in;
     }
 
-    // Чтение ULL LIT (беззнакового целого с суффиксом u11 или ULL)
+    // ЧТЕНИЕ ULL LIT (беззнаковое целое)
     std::istream& operator>>(std::istream& in, ULLIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -32,7 +36,7 @@ namespace kirsanov
 
         std::string tmp;
         // Читаем посимвольно, пока символ может быть частью числа ULL
-        // (цифры, u, U, l, L) - это позволяет остановиться на ':'
+        // (цифры, u, U, l, L) - это позволяет остановиться на разделителе ':'
         while (in && (std::isdigit(static_cast<unsigned char>(in.peek())) ||
             in.peek() == 'u' || in.peek() == 'U' ||
             in.peek() == 'l' || in.peek() == 'L'))
@@ -40,10 +44,16 @@ namespace kirsanov
             tmp.push_back(in.get());
         }
 
+        if (tmp.empty())
+        {
+            in.setstate(std::ios::failbit);
+            return in;
+        }
+
         bool valid = false;
         unsigned long long value = 0;
 
-        // Проверяем суффиксы: ULL, ull
+        // Проверяем суффикс "ull"
         if (tmp.size() >= 3)
         {
             std::string suffix = tmp.substr(tmp.size() - 3);
@@ -56,7 +66,7 @@ namespace kirsanov
                     value = std::stoull(tmp.substr(0, tmp.size() - 3));
                     valid = true;
                 }
-                catch (...) {}  // std::stoull может выбросить исключение
+                catch (...) {}
             }
         }
 
@@ -77,13 +87,13 @@ namespace kirsanov
         }
         else
         {
-            in.setstate(std::ios::failbit);  // не удалось распарсить
+            in.setstate(std::ios::failbit);
         }
 
         return in;
     }
 
-    // Чтение комплексного числа в формате #c(real imag)
+    // ЧТЕНИЕ КОМПЛЕКСНОГО ЧИСЛА (CMP LSP)
     std::istream& operator>>(std::istream& in, ComplexIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -92,7 +102,7 @@ namespace kirsanov
             return in;
         }
 
-        char c;
+        char c = '\0';
         in >> std::ws >> c;
         if (c != '#')
         {
@@ -115,7 +125,7 @@ namespace kirsanov
         }
 
         double real = 0.0, imag = 0.0;
-        in >> real >> imag;  // читаем действительную и мнимую части
+        in >> real >> imag;
 
         in >> std::ws >> c;
         if (c != ')')
@@ -128,7 +138,7 @@ namespace kirsanov
         return in;
     }
 
-    // Чтение строки в двойных кавычках
+    // ЧТЕНИЕ СТРОКИ В ДВОЙНЫХ КАВЫЧКАХ
     std::istream& operator>>(std::istream& in, StringIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -141,7 +151,7 @@ namespace kirsanov
         return std::getline(in >> DelimetrIO{ '"' }, dest.ref, '"');
     }
 
-    // Чтение имени ключа (key1, key2, key3)
+    // ЧТЕНИЕ ИМЕНИ КЛЮЧА (key1, key2, key3)
     std::istream& operator>>(std::istream& in, KeyIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -151,12 +161,6 @@ namespace kirsanov
         }
 
         dest.ref.clear();
-
-        // Пропускаем пробелы перед ключом
-        while (in && std::isspace(static_cast<unsigned char>(in.peek())))
-        {
-            in.get();
-        }
 
         // Читаем ключ: буквы и цифры (key1, key2, key3)
         while (in && std::isalnum(static_cast<unsigned char>(in.peek())))

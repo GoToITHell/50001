@@ -38,6 +38,7 @@ namespace kirsanov
         std::string& ref;  // ссылка на строку для записи
     };
 
+    // Перегрузки операторов ввода
     std::istream& operator>>(std::istream& in, DelimetrIO&& dest);
     std::istream& operator>>(std::istream& in, ULLIO&& dest);
     std::istream& operator>>(std::istream& in, ComplexIO&& dest);
