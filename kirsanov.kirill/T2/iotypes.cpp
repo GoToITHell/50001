@@ -1,14 +1,14 @@
-#include "iotypes.h"
-#include <cctype>  
+п»ї#include "iotypes.h"
+#include <cctype>
 
 namespace kirsanov
 {
-    // ПРОВЕРКА СИМВОЛА-РАЗДЕЛИТЕЛЯ 
+    // РџР РћР’Р•Р РљРђ РЎРРњР’РћР›Рђ-Р РђР—Р”Р•Р›РРўР•Р›РЇ
     std::istream& operator>>(std::istream& in, DelimetrIO&& dest)
     {
-        // Сохраняем флаги и отключаем пропуск пробелов
+        // РЎРѕС…СЂР°РЅСЏРµРј С„Р»Р°РіРё Рё РѕС‚РєР»СЋС‡Р°РµРј РїСЂРѕРїСѓСЃРє РїСЂРѕР±РµР»РѕРІ
         iofmtguard fmtguard(in);
-        in >> std::noskipws;  // Не пропускаем пробелы 
+        in >> std::noskipws;  // РќРµ РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹
 
         std::istream::sentry sentry(in);
         if (!sentry)
@@ -20,12 +20,12 @@ namespace kirsanov
         in >> c;
         if (in && (c != dest.exp))
         {
-            in.setstate(std::ios::failbit);  
+            in.setstate(std::ios::failbit);
         }
         return in;
     }
 
-    // ЧТЕНИЕ ULL LIT (беззнаковое целое) 
+    // Р§РўР•РќРР• ULL LIT (Р±РµР·Р·РЅР°РєРѕРІРѕРµ С†РµР»РѕРµ)
     std::istream& operator>>(std::istream& in, ULLIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -58,7 +58,7 @@ namespace kirsanov
         return in;
     }
 
-    // ЧТЕНИЕ КОМПЛЕКСНОГО ЧИСЛА (CMP LSP) 
+    // Р§РўР•РќРР• РљРћРњРџР›Р•РљРЎРќРћР“Рћ Р§РРЎР›Рђ (CMP LSP)
     std::istream& operator>>(std::istream& in, ComplexIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -69,31 +69,31 @@ namespace kirsanov
 
         char c = '\0';
         in >> std::ws >> c;
-        if (c != '#')  
+        if (c != '#')
         {
             in.setstate(std::ios::failbit);
             return in;
         }
 
         in >> c;
-        if (c != 'c')  
+        if (c != 'c')
         {
             in.setstate(std::ios::failbit);
             return in;
         }
 
         in >> c;
-        if (c != '(')  
+        if (c != '(')
         {
             in.setstate(std::ios::failbit);
             return in;
         }
 
         double real = 0.0, imag = 0.0;
-        in >> real >> imag;  
+        in >> real >> imag;
 
         in >> std::ws >> c;
-        if (c != ')')  
+        if (c != ')')
         {
             in.setstate(std::ios::failbit);
             return in;
@@ -103,7 +103,7 @@ namespace kirsanov
         return in;
     }
 
-    // ЧТЕНИЕ СТРОКИ В ДВОЙНЫХ КАВЫЧКАХ
+    // Р§РўР•РќРР• РЎРўР РћРљР Р’ Р”Р’РћР™РќР«РҐ РљРђР’Р«Р§РљРђРҐ
     std::istream& operator>>(std::istream& in, StringIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -112,11 +112,11 @@ namespace kirsanov
             return in;
         }
 
-        // std::getline с разделителем '"' читает строку между кавычками
+        // std::getline СЃ СЂР°Р·РґРµР»РёС‚РµР»РµРј '"' С‡РёС‚Р°РµС‚ СЃС‚СЂРѕРєСѓ РјРµР¶РґСѓ РєР°РІС‹С‡РєР°РјРё
         return std::getline(in >> DelimetrIO{ '"' }, dest.ref, '"');
     }
 
-    // ЧТЕНИЕ ИМЕНИ КЛЮЧА (key1, key2, key3)
+    // Р§РўР•РќРР• РРњР•РќР РљР›Р®Р§Рђ (key1, key2, key3)
     std::istream& operator>>(std::istream& in, KeyIO&& dest)
     {
         std::istream::sentry sentry(in);
@@ -127,13 +127,13 @@ namespace kirsanov
 
         dest.ref.clear();
 
-        // Читаем ключ: буквы и цифры (key1, key2, key3)
+        // Р§РёС‚Р°РµРј РєР»СЋС‡: Р±СѓРєРІС‹ Рё С†РёС„СЂС‹ (key1, key2, key3)
         while (in && std::isalnum(static_cast<unsigned char>(in.peek())))
         {
             dest.ref.push_back(in.get());
         }
 
-        // Проверяем, что прочитан один из допустимых ключей
+        // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РїСЂРѕС‡РёС‚Р°РЅ РѕРґРёРЅ РёР· РґРѕРїСѓСЃС‚РёРјС‹С… РєР»СЋС‡РµР№
         bool isKeyCorrect = (dest.ref == "key1" ||
             dest.ref == "key2" ||
             dest.ref == "key3");
