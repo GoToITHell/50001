@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <cstring>
 #include "StructuresIO.h"
 #include "iofmtguard.h"
 
