@@ -76,7 +76,7 @@ namespace ignatov
         {
             return in;
         }
-        
+
         std::string number;
         std::getline(in, number, ':');
         if (!in)
