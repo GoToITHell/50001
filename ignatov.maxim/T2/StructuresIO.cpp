@@ -50,7 +50,7 @@ namespace ignatov
             }
         }
 
-        bool isValidNumber = hasNumAfterDot && hasDot && hasNumAfterDot;
+        bool isValidNumber = hasNumBeforeDot && hasDot && hasNumAfterDot;
         if (!isValidNumber)
         {
             in.setstate(std::ios::failbit);
@@ -60,7 +60,7 @@ namespace ignatov
         char* end = nullptr;
         double value = std::strtod(number.c_str(), &end);
 
-        if (!end || strcmp(end, "d") == 0 && strcmp(end, "D") == 0)
+        if (!end || (strcmp(end, "d") != 0 && strcmp(end, "D") != 0))
         {
             in.setstate(std::ios::failbit);
             return in;
@@ -88,7 +88,7 @@ namespace ignatov
         char* end = nullptr;
         long long value = std::strtoll(number.c_str(), &end, 10);
 
-        if (!end || strcmp(end, "ll") != 0 && strcmp(end, "LL") != 0)
+        if (!end || (strcmp(end, "ll") != 0 && strcmp(end, "LL") != 0))
         {
             in.setstate(std::ios::failbit);
             return in;
@@ -119,21 +119,6 @@ namespace ignatov
         std::getline(in, dest.reference, ' ');
         if (in && !(dest.reference == "key1" ||
             dest.reference == "key2" || dest.reference == "key3")) {
-            in.setstate(std::ios::failbit);
-        }
-        return in;
-    }
-
-    std::istream& operator>>(std::istream& in, LabelIO&& dest)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry)
-        {
-            return in;
-        }
-        std::string data = "";
-        if ((in >> StringIO{ data }) && (data != dest.expected))
-        {
             in.setstate(std::ios::failbit);
         }
         return in;

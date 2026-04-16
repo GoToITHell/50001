@@ -27,7 +27,6 @@ namespace ignatov
         DataStruct input;
         {
             using sep = DelimiterIO;
-            using label = LabelIO;
             using key = KeyIO;
             using dbl = DoubleIO;
             using ll = LongLongIO;

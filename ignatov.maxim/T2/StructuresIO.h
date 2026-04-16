@@ -25,11 +25,6 @@ namespace ignatov
         std::string& reference;
     };
 
-    struct LabelIO
-    {
-        std::string expected;
-    };
-
     struct KeyIO
     {
         std::string& reference;
@@ -39,7 +34,6 @@ namespace ignatov
     std::istream& operator>>(std::istream& in, DoubleIO&& dest);
     std::istream& operator>>(std::istream& in, LongLongIO&& dest);
     std::istream& operator>>(std::istream& in, StringIO&& dest);
-    std::istream& operator>>(std::istream& in, LabelIO&& dest);
     std::istream& operator>>(std::istream& in, KeyIO&& dest);
 }
 
