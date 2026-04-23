@@ -25,7 +25,7 @@ namespace michshenko {
 
         in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
 
-        while (in && !(isKey1 && isKey2 && isKey3)) {
+        while (in) {
             in >> std::ws;
             if (in.peek() == ')') {
                 in >> DelimiterIO{ ')' };
