@@ -24,6 +24,7 @@ int main() {
         }
     }
 
+    
     std::sort(data.begin(), data.end(), comparator);
     std::copy(
         data.begin(),
