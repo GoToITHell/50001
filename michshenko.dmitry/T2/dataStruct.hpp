@@ -8,7 +8,7 @@
 
 namespace michshenko {
 
-    struct DataStruct 
+    struct DataStruct
     {
         double key1;
         char key2;

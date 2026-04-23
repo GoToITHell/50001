@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace michshenko {
-    
+
   class iofmtguard
   {
   public:
