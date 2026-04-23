@@ -119,13 +119,13 @@ namespace michshenko {
     }
 
 
-std::istream& operator>>(std::istream& in, DoubleIO&& dest) 
+std::istream& operator>>(std::istream& in, DoubleIO&& dest)
 {
     std::istream::sentry sentry(in);
     if (!sentry) {
         return in;
     }
-    
+
     in >> dest.ref;
     if (!in) {
         return in;
@@ -136,7 +136,7 @@ std::istream& operator>>(std::istream& in, DoubleIO&& dest)
     if (suffix != 'd' && suffix != 'D') {
         in.setstate(std::ios::failbit);
     }
-    
+
     return in;
 }
     // перегрузка для литерала
