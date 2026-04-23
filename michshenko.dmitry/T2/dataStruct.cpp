@@ -130,7 +130,7 @@ std::istream& operator>>(std::istream& in, DoubleIO&& dest)
     char suffix;
     in >> suffix;
 
-    if ((suffix == '+') && (suffix != 'd' && suffix != 'D')) 
+    if ((suffix == '+') && (suffix != 'd' && suffix != 'D'))
     {
         in.setstate(std::ios::failbit);
     }
