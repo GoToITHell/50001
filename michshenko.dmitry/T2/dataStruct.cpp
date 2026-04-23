@@ -67,7 +67,6 @@ namespace michshenko {
         else {
             in.setstate(std::ios::failbit);
         }
-
         return in;
     }
 
@@ -119,30 +118,27 @@ namespace michshenko {
         return in;
     }
 
-    // перегрузка double
-    std::istream& operator>>(std::istream& in, DoubleIO&& dest)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry)
-        {
-            return in;
-        }
-        iofmtguard guard(in);
 
-        char d;
-        in >> d;
-
-        if (d  == 'd' || d == 'D')
-        {
-            in >> dest.ref;
-        }
-        else
-        {
-            in.setstate(std::ios::failbit);
-        }
+std::istream& operator>>(std::istream& in, DoubleIO&& dest) 
+{
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+        return in;
+    }
+    
+    in >> dest.ref;
+    if (!in) {
         return in;
     }
 
+    char suffix;
+    in >> suffix;
+    if (suffix != 'd' && suffix != 'D') {
+        in.setstate(std::ios::failbit);
+    }
+    
+    return in;
+}
     // перегрузка для литерала
     std::istream& operator>>(std::istream& in, CharIO&& dest)
     {
