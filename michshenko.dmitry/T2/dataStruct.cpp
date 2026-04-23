@@ -70,20 +70,6 @@ namespace michshenko {
         return in;
     }
 
-    std::string formatDoubleLit(double value) {
-        std::ostringstream out;
-
-        double intpart;
-
-        if (std::fabs(std::modf(value, &intpart)) < std::numeric_limits<double>::epsilon()) {
-            out << std::fixed << std::setprecision(1) << value;
-        }
-        else {
-            out << std::defaultfloat << value;
-        }
-
-        return out.str();
-    }
 
     // поток вывода
     std::ostream& operator<<(std::ostream& out, const DataStruct& src) {
@@ -92,8 +78,19 @@ namespace michshenko {
             return out;
         }
         iofmtguard fmtguard(out);
+        double intPart;
 
-        out << "(:key1 "<<formatDoubleLit(src.key1) << "d:";
+        out << "(:key1 ";
+
+        if (std::fabs(std::modf(src.key1, &intPart)) < std::numeric_limits<double>::epsilon()) {
+            out << std::fixed << std::setprecision(1) << src.key1;
+        }
+        else {
+            out << std::defaultfloat << src.key1;
+        }
+
+
+        out<< "d:";
         out << "key2 '" << src.key2 <<"':";
         out << "key3 " << '\"' << src.key3 << '\"';
         out << ":)";
@@ -118,7 +115,6 @@ namespace michshenko {
         return in;
     }
 
-
 std::istream& operator>>(std::istream& in, DoubleIO&& dest)
 {
     std::istream::sentry sentry(in);
@@ -133,7 +129,9 @@ std::istream& operator>>(std::istream& in, DoubleIO&& dest)
 
     char suffix;
     in >> suffix;
-    if (suffix != 'd' && suffix != 'D') {
+
+    if ((suffix == '+') && (suffix != 'd' && suffix != 'D')) 
+    {
         in.setstate(std::ios::failbit);
     }
 

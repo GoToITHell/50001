@@ -13,26 +13,18 @@ int main() {
     using michshenko::comparator;
 
     std::vector<DataStruct> data;
-    DataStruct temp;
 
-    while (std::cin) {
-        if (std::cin >> temp)
-        {
-            data.push_back(temp);
-        }
-        else if (!std::cin.eof())
+    while (!std::cin.eof()) 
+    {
+        std::copy(std::istream_iterator<DataStruct>(std::cin), std::istream_iterator<DataStruct>(),std::back_inserter(data));
+        if (!std::cin.eof())
         {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        else
-        {
-            break;
-        }
     }
 
     std::sort(data.begin(), data.end(), comparator);
-
     std::copy(
         data.begin(),
         data.end(),
