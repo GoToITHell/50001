@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
                 }
 
                 bool res = isInframe(poly, polygonsList);
-                std::cout << (res ? "TRUE" : "FALSE") << std::endl;
+                std::cout << (res ? "<TRUE>" : "<FALSE>") << std::endl;
             }
             // МАксимальна последовательность
             else if (cmd == "MAXSEQ") {
