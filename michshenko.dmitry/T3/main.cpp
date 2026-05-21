@@ -52,11 +52,16 @@ int main(int argc, char* argv[]) {
 
     std::string line;
     while (std::getline(std::cin, line)) {
-        if (line.empty()) continue;
+        if (line.empty()) 
+        {
+            continue;
+        }
 
         std::vector<std::string> words = split(line);
-        if (words.empty()) continue;
-
+        if (words.empty())
+        {
+            continue;
+        }
         const std::string& cmd = words[0];
 
         try {
