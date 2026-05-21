@@ -11,7 +11,7 @@
 #include "algoritms.hpp"
 #include "service.hpp"
 #include "Polygon.hpp"
-#include "Streamguard.hpp"
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -40,38 +40,49 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Построчное чтение команд из stdin
+    std::string line;
+    while (std::getline(std::cin, line)) {
 
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (line.empty()) {
+            continue;
+        }
 
-    std::string command;
-    StreamGuard guard(std::cout);
-    std::cout << std::fixed << std::setprecision(1);
+        std::istringstream iss(line);
+        std::string command;
+        iss >> command;
+        if (command.empty()) {
+            continue;
+        }
 
-    while (std::cin >> command) {
+        // Площадь
         if (command == "AREA") {
             std::string value;
-            std::cin >> value;
+            iss >> value;
 
             if (value == "ODD" || value == "EVEN") {
-                std::cout << areaEvenOdd(value, polygonsList) << std::endl;
+                std::cout << std::fixed << std::setprecision(1) << areaEvenOdd(value, polygonsList) << std::endl;
             }
             else if (value == "MEAN") {
                 if (polygonsList.empty()) {
                     invalComm();
-                    continue;
+                } else {
+                    std::cout << std::fixed << std::setprecision(1) << areaMean(polygonsList) << std::endl;
                 }
-                std::cout << areaMean(polygonsList) << std::endl;
             }
             else {
                 bool isNumber = true;
                 for (char c : value) {
-                    if (!std::isdigit(c)) { isNumber = false; break; }
+                    if (!std::isdigit(c))
+                    {
+                        isNumber = false;
+                        break;
+                    }
                 }
                 if (isNumber) {
                     int num = std::stoi(value);
                     if (num >= 3) {
-                        std::cout << areaNum(num, polygonsList) << std::endl;
+                        std::cout << std::fixed << std::setprecision(1)<< areaNum(num, polygonsList) << std::endl;
                     } else {
                         invalComm();
                     }
@@ -80,37 +91,44 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
+
+        // минимальное и максимальное значения
         else if (command == "MAX" || command == "MIN") {
             if (polygonsList.empty()) {
                 invalComm();
                 continue;
             }
             std::string value;
-            std::cin >> value;
+            iss >> value;
 
-            if ((command == "MAX" && value == "AREA") ||
-                (command == "MAX" && value == "VERTEXES")) {
-                double res = maxAreaVertex(value, polygonsList);
-                if (value == "VERTEXES")
-                    std::cout << static_cast<int>(res) << std::endl;
-                else
-                    std::cout << res << std::endl;
-            }
-            else if ((command == "MIN" && value == "AREA") ||
-                     (command == "MIN" && value == "VERTEXES")) {
-                double res = minAreaVertex(value, polygonsList);
-                if (value == "VERTEXES")
-                    std::cout << static_cast<int>(res) << std::endl;
-                else
-                    std::cout << res << std::endl;
+            if (command == "MAX") {
+                if (value == "AREA") {
+                    std::cout << std::fixed << std::setprecision(1)<< maxAreaVertex("AREA", polygonsList) << std::endl;
+                }
+                else if (value == "VERTEXES") {
+                    std::cout << static_cast<int>(maxAreaVertex("VERTEXES", polygonsList)) << std::endl;
+                }
+                else {
+                    invalComm();
+                }
             }
             else {
-                invalComm();
+                if (value == "AREA") {
+                    std::cout << std::fixed << std::setprecision(1)<< minAreaVertex("AREA", polygonsList) << std::endl;
+                }
+                else if (value == "VERTEXES") {
+                    std::cout << static_cast<int>(minAreaVertex("VERTEXES", polygonsList)) << std::endl;
+                }
+                else {
+                    invalComm();
+                }
             }
         }
+
+        // количество
         else if (command == "COUNT") {
             std::string value;
-            std::cin >> value;
+            iss >> value;
 
             if (value == "EVEN" || value == "ODD") {
                 std::cout << countVertexOddNum(value, polygonsList) << std::endl;
@@ -118,7 +136,11 @@ int main(int argc, char* argv[]) {
             else {
                 bool isNumber = true;
                 for (char c : value) {
-                    if (!std::isdigit(c)) { isNumber = false; break; }
+                    if (!std::isdigit(c))
+                    {
+                        isNumber = false;
+                        break;
+                    }
                 }
                 if (isNumber) {
                     int num = std::stoi(value);
@@ -132,41 +154,56 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
+
+        // Влезает ли фигуры в бласть
         else if (command == "INFRAME") {
-            Polygon poly;
-            std::string line;
-            std::cin.clear();
-            if (!std::getline(std::cin >> std::ws, line)) {
+            std::string polygonStr;
+            std::getline(iss, polygonStr);
+            size_t first = polygonStr.find_first_not_of(" \t");
+            if (first != std::string::npos) {
+                polygonStr = polygonStr.substr(first);
+            } else {
                 invalComm();
                 continue;
             }
-            std::istringstream iss(line);
-            if (!(iss >> poly)) {
+
+            std::istringstream polyIss(polygonStr);
+            Polygon poly;
+            if (!(polyIss >> poly)) {
                 invalComm();
             } else {
                 bool result = isInframe(poly, polygonsList);
                 std::cout << (result ? "TRUE" : "FALSE") << std::endl;
             }
         }
+
+        //Максимальная последовательность
         else if (command == "MAXSEQ") {
-            Polygon target;
-            std::string line;
-            std::cin.clear();
-            if (!std::getline(std::cin >> std::ws, line)) {
+            std::string polygonStr;
+            std::getline(iss, polygonStr);
+            size_t first = polygonStr.find_first_not_of(" \t");
+            if (first != std::string::npos) {
+                polygonStr = polygonStr.substr(first);
+            } else {
                 invalComm();
                 continue;
             }
-            std::istringstream iss(line);
-            if (!(iss >> target)) {
+
+            std::istringstream polyIss(polygonStr);
+            Polygon target;
+            if (!(polyIss >> target)) {
                 invalComm();
             } else {
                 int result = maxSeq(polygonsList, target);
                 std::cout << result << std::endl;
             }
         }
+
+        // иначе
         else {
             invalComm();
         }
     }
+
     return 0;
 }
