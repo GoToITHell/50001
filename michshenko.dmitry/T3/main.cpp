@@ -13,13 +13,13 @@
 #include "Polygon.hpp"
 #include "service.hpp"
 
-// Вспомогательная функция: разбить строку на слова
+// Вспомогательная функция, чтобы разбить строку на слова
 static std::vector<std::string> split(const std::string& line) {
     std::istringstream iss(line);
     return { std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>() };
 }
 
-// Вывод ошибки (без манипуляций с cin)
+
 static void invalidCommand() {
     std::cout << "<INVALID COMMAND>" << std::endl;
 }
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Чтение фигур из файла (оставляем ваш существующий метод)
+    // Чтение фигур из файла (
     std::vector<Polygon> polygonsList;
     while (!input.eof()) {
         std::copy(
@@ -50,7 +50,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // ----- Построчное чтение команд -----
     std::string line;
     while (std::getline(std::cin, line)) {
         if (line.empty()) continue;
@@ -61,66 +60,90 @@ int main(int argc, char* argv[]) {
         const std::string& cmd = words[0];
 
         try {
-            // ---------- AREA ----------
+            // Площадь
             if (cmd == "AREA") {
-                if (words.size() != 2) throw std::runtime_error("");
+                if (words.size() != 2)
+                {
+                    throw std::runtime_error("");
+                }
                 const std::string& arg = words[1];
 
                 if (arg == "ODD" || arg == "EVEN") {
-                    std::cout << std::fixed << std::setprecision(1)
-                              << areaEvenOdd(arg, polygonsList) << std::endl;
+                    std::cout << std::fixed << std::setprecision(1) << areaEvenOdd(arg, polygonsList) << std::endl;
                 }
                 else if (arg == "MEAN") {
-                    if (polygonsList.empty()) throw std::runtime_error("");
-                    std::cout << std::fixed << std::setprecision(1)
-                              << areaMean(polygonsList) << std::endl;
+                    if (polygonsList.empty())
+                    {
+                        throw std::runtime_error("");
+                    }
+                    std::cout << std::fixed << std::setprecision(1)<< areaMean(polygonsList) << std::endl;
                 }
                 else {
                     int vertexCount = std::stoi(arg);
-                    if (vertexCount < 3) throw std::runtime_error("");
-                    std::cout << std::fixed << std::setprecision(1)
-                              << areaNum(vertexCount, polygonsList) << std::endl;
+                    if (vertexCount < 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+                    std::cout << std::fixed << std::setprecision(1)<< areaNum(vertexCount, polygonsList) << std::endl;
                 }
             }
-            // ---------- MAX / MIN ----------
+            // MAX/MIN
             else if (cmd == "MAX" || cmd == "MIN") {
-                if (words.size() != 2) throw std::runtime_error("");
-                if (polygonsList.empty()) throw std::runtime_error("");
+                if (words.size() != 2)
+                {
+                    throw std::runtime_error("");
+                }
+                if (polygonsList.empty())
+                {
+                    throw std::runtime_error("");
+                }
 
                 const std::string& arg = words[1];
                 if (cmd == "MAX") {
                     if (arg == "AREA") {
-                        std::cout << std::fixed << std::setprecision(1)
-                                  << maxAreaVertex("AREA", polygonsList) << std::endl;
+                        std::cout << std::fixed << std::setprecision(1)<< maxAreaVertex("AREA", polygonsList) << std::endl;
                     } else if (arg == "VERTEXES") {
                         std::cout << static_cast<int>(maxAreaVertex("VERTEXES", polygonsList)) << std::endl;
-                    } else throw std::runtime_error("");
-                } else { // MIN
+                    } else
+                    {
+                        throw std::runtime_error("");
+                    }
+                } else {
                     if (arg == "AREA") {
-                        std::cout << std::fixed << std::setprecision(1)
-                                  << minAreaVertex("AREA", polygonsList) << std::endl;
+                        std::cout << std::fixed << std::setprecision(1)<< minAreaVertex("AREA", polygonsList) << std::endl;
                     } else if (arg == "VERTEXES") {
                         std::cout << static_cast<int>(minAreaVertex("VERTEXES", polygonsList)) << std::endl;
-                    } else throw std::runtime_error("");
+                    } else
+                    {
+                        throw std::runtime_error("");
+                    }
                 }
             }
-            // ---------- COUNT ----------
+            // Количество
             else if (cmd == "COUNT") {
-                if (words.size() != 2) throw std::runtime_error("");
+                if (words.size() != 2)
+                {
+                    throw std::runtime_error("");
+                }
                 const std::string& arg = words[1];
 
                 if (arg == "EVEN" || arg == "ODD") {
                     std::cout << countVertexOddNum(arg, polygonsList) << std::endl;
                 } else {
                     int vertexCount = std::stoi(arg);
-                    if (vertexCount < 3) throw std::runtime_error("");
+                    if (vertexCount < 3)
+                    {
+                        throw std::runtime_error("");
+                    }
                     std::cout << countVertexOddNum(static_cast<size_t>(vertexCount), polygonsList) << std::endl;
                 }
             }
-            // ---------- INFRAME ----------
+            // Влезают ли фигуры в область
             else if (cmd == "INFRAME") {
-                if (words.size() < 2) throw std::runtime_error("");
-                // Склеиваем всё, начиная со второго слова, в одну строку
+                if (words.size() < 2)
+                {
+                    throw std::runtime_error("");
+                }
                 std::string polygonStr;
                 for (size_t i = 1; i < words.size(); ++i) {
                     if (i != 1) polygonStr += " ";
@@ -128,13 +151,26 @@ int main(int argc, char* argv[]) {
                 }
                 std::istringstream iss(polygonStr);
                 Polygon poly;
-                if (!(iss >> poly)) throw std::runtime_error("");
+                if (!(iss >> poly))
+                {
+                    throw std::runtime_error("");
+                }
+
+                char leftover;
+                if (iss >> leftover)
+                {
+                    throw std::runtime_error("");
+                }
+
                 bool res = isInframe(poly, polygonsList);
                 std::cout << (res ? "TRUE" : "FALSE") << std::endl;
             }
-            // ---------- MAXSEQ ----------
+            // МАксимальна последовательность
             else if (cmd == "MAXSEQ") {
-                if (words.size() < 2) throw std::runtime_error("");
+                if (words.size() < 2)
+                {
+                    throw std::runtime_error("");
+                }
                 std::string polygonStr;
                 for (size_t i = 1; i < words.size(); ++i) {
                     if (i != 1) polygonStr += " ";
@@ -142,10 +178,18 @@ int main(int argc, char* argv[]) {
                 }
                 std::istringstream iss(polygonStr);
                 Polygon target;
-                if (!(iss >> target)) throw std::runtime_error("");
+                if (!(iss >> target))
+                {
+                    throw std::runtime_error("");
+                }
+                char leftover;
+                if (iss >> leftover)
+                {
+                    throw std::runtime_error("");
+                }
                 std::cout << maxSeq(polygonsList, target) << std::endl;
             }
-            // ---------- Неизвестная команда ----------
+            // иначе
             else {
                 throw std::runtime_error("");
             }
