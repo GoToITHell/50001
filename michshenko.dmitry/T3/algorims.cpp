@@ -6,11 +6,11 @@
 #include <functional>
 #include <iterator>
 
-namespace {
 
-    // ------------------------------------------------------------
+
+
     // Вспомогательная функция площади (формула Гаусса)
-    // ------------------------------------------------------------
+
     double areaPolygons(const std::vector<Point>& points) {
         if (points.size() < 3) return 0.0;
         double sum = 0.0;
@@ -23,7 +23,7 @@ namespace {
         return std::abs(sum) / 2.0;
     }
 
-    // Компараторы для MAX / MIN
+    // Компараторы для MAX/MIN
     bool AreaComparator(const Polygon& a, const Polygon& b) {
         return areaPolygons(a.points) < areaPolygons(b.points);
     }
@@ -31,9 +31,8 @@ namespace {
         return a.points.size() < b.points.size();
     }
 
-    // ------------------------------------------------------------
+
     // Bounding Box helpers (для INFRAME)
-    // ------------------------------------------------------------
     BoundingBox getBoundingBox(const Polygon& poly) {
         if (poly.points.empty()) return {0,0,0,0};
         auto minX = std::min_element(poly.points.begin(), poly.points.end(),
@@ -64,6 +63,7 @@ namespace {
         return {minX->minX, minY->minY, maxX->maxX, maxY->maxY};
     }
 
+    // функции-геттеры минимальных координат
     double getMinX(const BoundingBox& b) { return b.minX; }
     double getMinY(const BoundingBox& b) { return b.minY; }
     double getMaxX(const BoundingBox& b) { return b.maxX; }
@@ -71,9 +71,12 @@ namespace {
     bool isEqual(double a, double b) { return a >= b; }
     bool isLessEqual(double a, double b) { return a <= b; }
 
-    // Сравнение двух многоугольников (с циклическим сдвигом)
+    // Сравнение двух многоугольников
     bool isPolygonsEqual(const Polygon& a, const Polygon& b) {
-        if (a.points.size() != b.points.size()) return false;
+        if (a.points.size() != b.points.size())
+        {
+            return false;
+        }
         auto pointsEqual = [](const Point& p1, const Point& p2) {
             return p1.x == p2.x && p1.y == p2.y;
         };
@@ -90,12 +93,10 @@ namespace {
                           rev.points.begin(), rev.points.end(), pointsEqual);
     }
 
-} // namespace
 
-// ------------------------------------------------------------
-// Публичные функции
-// ------------------------------------------------------------
 
+
+// Публичные функции варианта
 double areaEvenOdd(const std::string& value, const std::vector<Polygon>& pols) {
     bool needEven = (value == "EVEN");
     return std::accumulate(pols.begin(), pols.end(), 0.0,
@@ -106,13 +107,18 @@ double areaEvenOdd(const std::string& value, const std::vector<Polygon>& pols) {
         });
 }
 
+// средняя площадь
 double areaMean(const std::vector<Polygon>& pols) {
-    if (pols.empty()) return 0.0;
+    if (pols.empty())
+    {
+        return 0.0;
+    }
     double total = std::accumulate(pols.begin(), pols.end(), 0.0,
         [](double s, const Polygon& p) { return s + areaPolygons(p.points); });
     return total / static_cast<double>(pols.size());
 }
 
+// площадь по количеству вершин
 double areaNum(int value, const std::vector<Polygon>& pols) {
     return std::accumulate(pols.begin(), pols.end(), 0.0,
         [value](double s, const Polygon& p) {
@@ -120,8 +126,12 @@ double areaNum(int value, const std::vector<Polygon>& pols) {
         });
 }
 
+// максимальная площадь по вершинам
 double maxAreaVertex(const std::string& value, const std::vector<Polygon>& pols) {
-    if (pols.empty()) return 0.0;
+    if (pols.empty())
+    {
+        return 0.0;
+    }
     if (value == "AREA") {
         auto it = std::max_element(pols.begin(), pols.end(), AreaComparator);
         return areaPolygons(it->points);
@@ -133,8 +143,12 @@ double maxAreaVertex(const std::string& value, const std::vector<Polygon>& pols)
     return 0.0;
 }
 
+// минимальная площадь по вершинам
 double minAreaVertex(const std::string& value, const std::vector<Polygon>& pols) {
-    if (pols.empty()) return 0.0;
+    if (pols.empty())
+    {
+        return 0.0;
+    }
     if (value == "AREA") {
         auto it = std::min_element(pols.begin(), pols.end(), AreaComparator);
         return areaPolygons(it->points);
@@ -146,6 +160,7 @@ double minAreaVertex(const std::string& value, const std::vector<Polygon>& pols)
     return 0.0;
 }
 
+//
 int countVertexOddNum(const std::string& value, const std::vector<Polygon>& pols) {
     bool countEven = (value == "EVEN");
     return std::count_if(pols.begin(), pols.end(),
@@ -154,14 +169,19 @@ int countVertexOddNum(const std::string& value, const std::vector<Polygon>& pols
         });
 }
 
+//
 int countVertexOddNum(size_t value, const std::vector<Polygon>& pols) {
     if (value < 3) return 0;
     return std::count_if(pols.begin(), pols.end(),
         [value](const Polygon& p) { return p.points.size() == value; });
 }
-
+// функции варианта
+// проверка на вхождение фигур в область
 bool isInframe(const Polygon& pol, const std::vector<Polygon>& pols) {
-    if (pols.empty()) return false;
+    if (pols.empty())
+    {
+        return false;
+    }
     BoundingBox overall = getOverallBoundingBox(pols);
     BoundingBox test = getBoundingBox(pol);
     using namespace std::placeholders;
@@ -175,11 +195,18 @@ bool isInframe(const Polygon& pol, const std::vector<Polygon>& pols) {
     return result();
 }
 
+// максимальная повторяющиеся последовательность
 int maxSeq(const std::vector<Polygon>& pols, const Polygon& target) {
-    struct State { int cur = 0, best = 0; };
+    struct State
+    {
+        int cur = 0, best = 0;
+    };
     State res = std::accumulate(pols.begin(), pols.end(), State{},
         [&target](State s, const Polygon& p) {
-            if (p.points.size() < 3) return s;
+            if (p.points.size() < 3)
+            {
+              return s;
+            }
             if (isPolygonsEqual(p, target)) {
                 s.cur++;
                 if (s.cur > s.best) s.best = s.cur;
